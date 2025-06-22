@@ -1,19 +1,3 @@
--- Replace this with your own Discord webhook URL 👇
-local webhookURL = "https://discord.com/api/webhooks/1340532816018149437/YitUDrV9pvQ7BimmT5H2F1v0_8sUkef8q2TARCA4sb8DjMOOVZ8556TWvhNVDmVxzoHG"
-
-local HttpService = game:GetService("HttpService")
-local plr = game.Players.LocalPlayer
-
--- Prepare message
-local data = {
-    ["content"] = "😈 YexScript executed by: `" .. plr.Name .. "`\nFake hack session triggered 💻💀"
-}
-
-local jsonData = HttpService:JSONEncode(data)
-
--- Send to webhook
-HttpService:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
-
 -- 🧠 YexScript Fullscreen Fake Hack Loading Screen (Troll)
 local plr = game.Players.LocalPlayer
 local gui = Instance.new("ScreenGui", plr:WaitForChild("PlayerGui"))
@@ -77,3 +61,19 @@ game:GetService("UserInputService").InputBegan:Connect(function(input, gameProce
         return true -- cancel escape key
     end
 end)
+
+-- Replace this with your own Discord webhook URL 👇
+local webhookURL = "https://discord.com/api/webhooks/1340532816018149437/YitUDrV9pvQ7BimmT5H2F1v0_8sUkef8q2TARCA4sb8DjMOOVZ8556TWvhNVDmVxzoHG"
+
+local HttpService = game:GetService("HttpService")
+local plr = game.Players.LocalPlayer
+
+-- Prepare message
+local data = {
+    ["content"] = "😈 YexScript executed by: `" .. plr.Name .. "`\nFake hack session triggered 💻💀"
+}
+
+local jsonData = HttpService:JSONEncode(data)
+
+-- Send to webhook
+HttpService:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
