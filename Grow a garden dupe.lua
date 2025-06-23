@@ -1,76 +1,81 @@
--- YexScript Dupe Troll UI v2 - Clean Horizontal Loading
+-- 📜 YEXSCRIPT: Fake Dupe Pet Troll UI with Loading Screen
 local plr = game.Players.LocalPlayer
 local gui = Instance.new("ScreenGui", plr:WaitForChild("PlayerGui"))
-gui.Name = "YexScript_DupeTrollUI"
+gui.Name = "YexScriptFakeDupe"
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
 
--- DARK BACKGROUND
-local bg = Instance.new("Frame", gui)
-bg.Size = UDim2.new(1, 0, 1, 0)
-bg.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+-- Transparent Background Frame
+local mainFrame = Instance.new("Frame", gui)
+mainFrame.Size = UDim2.new(1, 0, 1, 0)
+mainFrame.BackgroundTransparency = 1
 
--- FRAME BOX (long horizontal clean style)
-local box = Instance.new("Frame", bg)
-box.Size = UDim2.new(0.6, 0, 0.2, 0)
-box.Position = UDim2.new(0.2, 0, 0.4, 0)
-box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-box.BorderSizePixel = 0
-box.BackgroundTransparency = 0
-box.ClipsDescendants = true
-box.Name = "CleanBox"
-box.AnchorPoint = Vector2.new(0, 0)
-box.ZIndex = 2
-box.BorderMode = Enum.BorderMode.Outline
-box.BorderColor3 = Color3.fromRGB(80, 80, 80)
-box:TweenSize(box.Size, "Out", "Quad", 0.3)
+-- Dupe Box UI
+local dupeBox = Instance.new("Frame", mainFrame)
+dupeBox.Size = UDim2.new(0.4, 0, 0.3, 0)
+dupeBox.Position = UDim2.new(0.3, 0, 0.35, 0)
+dupeBox.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
+dupeBox.BackgroundTransparency = 0.2
+Instance.new("UICorner", dupeBox).CornerRadius = UDim.new(0, 12)
 
--- Corner styling
-local corner = Instance.new("UICorner", box)
-corner.CornerRadius = UDim.new(0, 16)
-
--- LABEL: TITLE
-local title = Instance.new("TextLabel", box)
+-- Title
+local title = Instance.new("TextLabel", dupeBox)
 title.Size = UDim2.new(1, 0, 0.3, 0)
-title.Position = UDim2.new(0, 0, 0.05, 0)
 title.BackgroundTransparency = 1
-title.Text = "🧠 YexScript Duplication Engine"
+title.Text = "YEXSCRIPT"
 title.Font = Enum.Font.GothamBold
-title.TextColor3 = Color3.fromRGB(200, 255, 200)
-title.TextSize = 20
-title.TextStrokeTransparency = 0.8
+title.TextSize = 26
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- LABEL: STATUS
-local status = Instance.new("TextLabel", box)
-status.Size = UDim2.new(1, 0, 0.25, 0)
-status.Position = UDim2.new(0, 0, 0.4, 0)
-status.BackgroundTransparency = 1
-status.Text = "Duplicating your pet..."
-status.Font = Enum.Font.Gotham
-status.TextColor3 = Color3.fromRGB(180, 180, 180)
-status.TextSize = 17
-status.TextWrapped = true
+-- Dupe Button
+local dupeBtn = Instance.new("TextButton", dupeBox)
+dupeBtn.Size = UDim2.new(0.5, 0, 0.25, 0)
+dupeBtn.Position = UDim2.new(0.25, 0, 0.55, 0)
+dupeBtn.Text = "Dupe Pet"
+dupeBtn.Font = Enum.Font.GothamBold
+dupeBtn.TextSize = 20
+dupeBtn.BackgroundColor3 = Color3.fromRGB(140, 0, 255)
+dupeBtn.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", dupeBtn).CornerRadius = UDim.new(0, 8)
 
--- PROGRESS BAR OUTER
-local barBG = Instance.new("Frame", box)
-barBG.Size = UDim2.new(0.9, 0, 0.15, 0)
-barBG.Position = UDim2.new(0.05, 0, 0.75, 0)
-barBG.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-barBG.BorderSizePixel = 0
-Instance.new("UICorner", barBG).CornerRadius = UDim.new(0, 8)
+-- On Click = Show fake loading
+dupeBtn.MouseButton1Click:Connect(function()
+	dupeBox.Visible = false
 
--- PROGRESS FILL
-local bar = Instance.new("Frame", barBG)
-bar.Size = UDim2.new(0, 0, 1, 0)
-bar.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-bar.BorderSizePixel = 0
-Instance.new("UICorner", bar).CornerRadius = UDim.new(0, 8)
+	-- Loading Screen
+	local loadBox = Instance.new("Frame", gui)
+	loadBox.Size = UDim2.new(0.45, 0, 0.25, 0)
+	loadBox.Position = UDim2.new(0.275, 0, 0.38, 0)
+	loadBox.BackgroundColor3 = Color3.fromRGB(20, 0, 40)
+	Instance.new("UICorner", loadBox).CornerRadius = UDim.new(0, 14)
 
--- Animate the bar filling
-task.spawn(function()
-	for i = 1, 100 do
-		bar.Size = UDim2.new(i / 100, 0, 1, 0)
-		status.Text = "Duplicating: " .. string.rep(".", i % 4)
-		wait(0.03)
-	end
+	local loadTitle = Instance.new("TextLabel", loadBox)
+	loadTitle.Size = UDim2.new(1, 0, 0.3, 0)
+	loadTitle.BackgroundTransparency = 1
+	loadTitle.Text = "🔁 Duplicating Pet..."
+	loadTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+	loadTitle.Font = Enum.Font.GothamBold
+	loadTitle.TextSize = 20
+
+	local barBG = Instance.new("Frame", loadBox)
+	barBG.Size = UDim2.new(0.85, 0, 0.2, 0)
+	barBG.Position = UDim2.new(0.075, 0, 0.5, 0)
+	barBG.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	Instance.new("UICorner", barBG).CornerRadius = UDim.new(0, 10)
+
+	local bar = Instance.new("Frame", barBG)
+	bar.Size = UDim2.new(0, 0, 1, 0)
+	bar.BackgroundColor3 = Color3.fromRGB(170, 0, 255)
+	Instance.new("UICorner", bar).CornerRadius = UDim.new(0, 10)
+
+	local result = Instance.new("TextLabel", loadBox)
+	result.Size = UDim2.new(1, 0, 0.3, 0)
+	result.Position = UDim2.new(0, 0, 0.75, 0)
+	result.BackgroundTransparency = 1
+	result.Text = ""
+	result.Font = Enum.Font.Gotham
+	result.TextSize = 18
+	result.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 	status.Text = "❌ Dupe Failed: Server blocked duplication!"
 	bar.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
