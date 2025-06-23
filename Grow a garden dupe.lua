@@ -60,29 +60,54 @@ applySpeed.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Fly Toggle
-y += 35
-local flyToggle = Instance.new("TextButton", frame)
-flyToggle.Position = UDim2.new(0, 10, 0, y)
-flyToggle.Size = UDim2.new(1, -20, 0, 30)
-flyToggle.Text = "🛫 Toggle Fly"
-flyToggle.BackgroundColor3 = Color3.fromRGB(50, 0, 100)
-flyToggle.TextColor3 = Color3.new(1,1,1)
-flyToggle.Font = Enum.Font.Gotham
-flyToggle.TextSize = 14
-
+-- Fix Fly System (works with WASD)
 local flying = false
-local vel = Instance.new("BodyVelocity")
-vel.MaxForce = Vector3.new()
+local speed = 60
+local UIS = game:GetService("UserInputService")
+local RS = game:GetService("RunService")
+local HRP = char:WaitForChild("HumanoidRootPart")
+
+local directions = {W = false, A = false, S = false, D = false, Q = false, E = false}
+
+-- Detect key inputs
+UIS.InputBegan:Connect(function(input, gpe)
+	if gpe then return end
+	local key = input.KeyCode.Name
+	if directions[key] ~= nil then directions[key] = true end
+end)
+
+UIS.InputEnded:Connect(function(input)
+	local key = input.KeyCode.Name
+	if directions[key] ~= nil then directions[key] = false end
+end)
+
+-- Update loop for fly
+RS:BindToRenderStep("YexFly", 100, function()
+	if flying then
+		local cam = workspace.CurrentCamera
+		local move = Vector3.new()
+
+		if directions.W then move += cam.CFrame.LookVector end
+		if directions.S then move -= cam.CFrame.LookVector end
+		if directions.A then move -= cam.CFrame.RightVector end
+		if directions.D then move += cam.CFrame.RightVector end
+		if directions.Q then move -= cam.CFrame.UpVector end
+		if directions.E then move += cam.CFrame.UpVector end
+
+		HRP.Velocity = move.Unit * speed
+		HRP.AssemblyLinearVelocity = HRP.Velocity
+	else
+		HRP.Velocity = Vector3.zero
+	end
+end)
 
 flyToggle.MouseButton1Click:Connect(function()
 	flying = not flying
 	if flying then
-		vel.MaxForce = Vector3.new(1e5, 1e5, 1e5)
-		vel.Velocity = Vector3.zero
-		vel.Parent = char:WaitForChild("HumanoidRootPart")
+		flyToggle.Text = "🛫 Fly: ON"
 	else
-		vel.Parent = nil
+		flyToggle.Text = "🛫 Fly: OFF"
+		HRP.Velocity = Vector3.zero
 	end
 end)
 
