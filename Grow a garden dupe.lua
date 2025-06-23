@@ -1,29 +1,55 @@
--- 💻 YEXSCRIPT - FULL MOD HUB UI
+-- 📲 YEXSCRIPT HUB LOADING + GUI + FLY SYSTEM
 local plr = game.Players.LocalPlayer
 local char = plr.Character or plr.CharacterAdded:Wait()
+
+-- 🟣 Loading Screen
+local loadingGui = Instance.new("ScreenGui", plr:WaitForChild("PlayerGui"))
+loadingGui.Name = "Yex_Loading"
+loadingGui.ResetOnSpawn = false
+loadingGui.IgnoreGuiInset = true
+
+local bg = Instance.new("Frame", loadingGui)
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+
+local loadingText = Instance.new("TextLabel", bg)
+loadingText.AnchorPoint = Vector2.new(0.5, 0.5)
+loadingText.Position = UDim2.new(0.5, 0, 0.5, 0)
+loadingText.Size = UDim2.new(0, 300, 0, 40)
+loadingText.BackgroundTransparency = 1
+loadingText.Text = "🔧 Loading YEXSCRIPT..."
+loadingText.Font = Enum.Font.GothamBold
+loadingText.TextSize = 24
+loadingText.TextColor3 = Color3.new(1, 1, 1)
+
+-- Wait 3 seconds before UI appears
+task.wait(3)
+loadingGui:Destroy()
+
+-- 🔳 Main GUI
 local gui = Instance.new("ScreenGui", plr:WaitForChild("PlayerGui"))
-gui.Name = "YexScript_ModHub"
+gui.Name = "YexScript_Hub"
 gui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 250, 0, 330)
-frame.Position = UDim2.new(0, 10, 0.4, -150)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+frame.Size = UDim2.new(0, 260, 0, 320)
+frame.Position = UDim2.new(0, 20, 0.4, -160)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.Active = true
 frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
 
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "⚙️ YEXSCRIPT MOD HUB"
-title.TextColor3 = Color3.new(1, 1, 1)
-title.BackgroundTransparency = 1
+title.Text = "⚙️ YEXSCRIPT HUB"
 title.Font = Enum.Font.GothamBold
 title.TextSize = 18
+title.TextColor3 = Color3.new(1, 1, 1)
+title.BackgroundTransparency = 1
 
-local y = 35
+local y = 40
 
--- WalkSpeed Input
+-- WalkSpeed Setting
 local speedLabel = Instance.new("TextLabel", frame)
 speedLabel.Position = UDim2.new(0, 10, 0, y)
 speedLabel.Size = UDim2.new(0, 100, 0, 25)
@@ -37,19 +63,19 @@ local speedInput = Instance.new("TextBox", frame)
 speedInput.Position = UDim2.new(0, 110, 0, y)
 speedInput.Size = UDim2.new(0, 60, 0, 25)
 speedInput.Text = "16"
+speedInput.BackgroundColor3 = Color3.fromRGB(60, 0, 100)
+speedInput.TextColor3 = Color3.new(1,1,1)
 speedInput.Font = Enum.Font.Gotham
 speedInput.TextSize = 14
-speedInput.BackgroundColor3 = Color3.fromRGB(50, 0, 100)
-speedInput.TextColor3 = Color3.new(1,1,1)
 
 local applySpeed = Instance.new("TextButton", frame)
 applySpeed.Position = UDim2.new(0, 180, 0, y)
 applySpeed.Size = UDim2.new(0, 60, 0, 25)
 applySpeed.Text = "Apply"
+applySpeed.BackgroundColor3 = Color3.fromRGB(80, 0, 130)
+applySpeed.TextColor3 = Color3.new(1,1,1)
 applySpeed.Font = Enum.Font.Gotham
 applySpeed.TextSize = 14
-applySpeed.BackgroundColor3 = Color3.fromRGB(60, 0, 100)
-applySpeed.TextColor3 = Color3.new(1,1,1)
 
 applySpeed.MouseButton1Click:Connect(function()
 	local value = tonumber(speedInput.Text)
@@ -58,7 +84,7 @@ applySpeed.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Fixed FLY system
+-- ✅ Universal Fly (Mobile + PC)
 y += 35
 local flyToggle = Instance.new("TextButton", frame)
 flyToggle.Position = UDim2.new(0, 10, 0, y)
@@ -70,114 +96,56 @@ flyToggle.Font = Enum.Font.Gotham
 flyToggle.TextSize = 14
 
 local flying = false
-local speed = 60
 local UIS = game:GetService("UserInputService")
-local RS = game:GetService("RunService")
+local RunService = game:GetService("RunService")
 local HRP = char:WaitForChild("HumanoidRootPart")
-local dirs = {W=false,A=false,S=false,D=false,Q=false,E=false}
+local bv = Instance.new("BodyVelocity")
+bv.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+bv.Velocity = Vector3.zero
 
-UIS.InputBegan:Connect(function(input, gpe)
-	if gpe then return end
-	local key = input.KeyCode.Name
-	if dirs[key] ~= nil then dirs[key] = true end
+local bg = Instance.new("BodyGyro")
+bg.MaxTorque = Vector3.new(1e9, 1e9, 1e9)
+bg.P = 9e4
+bg.CFrame = HRP.CFrame
+
+local keys = {W=false,A=false,S=false,D=false,Q=false,E=false}
+UIS.InputBegan:Connect(function(i,g)
+	if g then return end
+	if keys[i.KeyCode.Name] ~= nil then keys[i.KeyCode.Name] = true end
+end)
+UIS.InputEnded:Connect(function(i)
+	if keys[i.KeyCode.Name] ~= nil then keys[i.KeyCode.Name] = false end
 end)
 
-UIS.InputEnded:Connect(function(input)
-	local key = input.KeyCode.Name
-	if dirs[key] ~= nil then dirs[key] = false end
-end)
-
-RS:BindToRenderStep("YexFly", 100, function()
+RunService.RenderStepped:Connect(function()
 	if flying then
 		local cam = workspace.CurrentCamera
 		local move = Vector3.zero
-		if dirs.W then move += cam.CFrame.LookVector end
-		if dirs.S then move -= cam.CFrame.LookVector end
-		if dirs.A then move -= cam.CFrame.RightVector end
-		if dirs.D then move += cam.CFrame.RightVector end
-		if dirs.Q then move -= cam.CFrame.UpVector end
-		if dirs.E then move += cam.CFrame.UpVector end
-		HRP.Velocity = move.Unit * speed
+		if UIS.TouchEnabled then
+			move = cam.CFrame.LookVector -- Mobile auto forward
+		else
+			if keys.W then move += cam.CFrame.LookVector end
+			if keys.S then move -= cam.CFrame.LookVector end
+			if keys.A then move -= cam.CFrame.RightVector end
+			if keys.D then move += cam.CFrame.RightVector end
+			if keys.Q then move -= cam.CFrame.UpVector end
+			if keys.E then move += cam.CFrame.UpVector end
+		end
+		bv.Velocity = move.Unit * 50
+		bg.CFrame = cam.CFrame
 	end
 end)
 
 flyToggle.MouseButton1Click:Connect(function()
 	flying = not flying
 	if flying then
+		bv.Parent = HRP
+		bg.Parent = HRP
 		flyToggle.Text = "🛫 Fly: ON"
 	else
-		flyToggle.Text = "🛫 Fly: OFF"
+		bv.Parent = nil
+		bg.Parent = nil
 		HRP.Velocity = Vector3.zero
+		flyToggle.Text = "🛫 Fly: OFF"
 	end
-end)
-
--- Noclip Toggle
-y += 35
-local noclip = false
-local noclipBtn = Instance.new("TextButton", frame)
-noclipBtn.Position = UDim2.new(0, 10, 0, y)
-noclipBtn.Size = UDim2.new(1, -20, 0, 30)
-noclipBtn.Text = "🚶 Toggle NoClip"
-noclipBtn.BackgroundColor3 = Color3.fromRGB(50, 0, 100)
-noclipBtn.TextColor3 = Color3.new(1,1,1)
-noclipBtn.Font = Enum.Font.Gotham
-noclipBtn.TextSize = 14
-
-noclipBtn.MouseButton1Click:Connect(function()
-	noclip = not noclip
-end)
-
-RS.Stepped:Connect(function()
-	if noclip then
-		for _, v in pairs(char:GetDescendants()) do
-			if v:IsA("BasePart") and v.CanCollide == true then
-				v.CanCollide = false
-			end
-		end
-	end
-end)
-
--- Visual Sheckles Spoofer
-y += 40
-local sheckInput = Instance.new("TextBox", frame)
-sheckInput.Position = UDim2.new(0, 10, 0, y)
-sheckInput.Size = UDim2.new(0, 120, 0, 25)
-sheckInput.Text = "999999"
-sheckInput.Font = Enum.Font.Gotham
-sheckInput.TextSize = 14
-sheckInput.BackgroundColor3 = Color3.fromRGB(50, 0, 100)
-sheckInput.TextColor3 = Color3.new(1,1,1)
-
-local applySheck = Instance.new("TextButton", frame)
-applySheck.Position = UDim2.new(0, 140, 0, y)
-applySheck.Size = UDim2.new(0, 45, 0, 25)
-applySheck.Text = "Set"
-applySheck.Font = Enum.Font.Gotham
-applySheck.TextSize = 14
-applySheck.BackgroundColor3 = Color3.fromRGB(60, 0, 100)
-applySheck.TextColor3 = Color3.new(1,1,1)
-
-local randomSheck = Instance.new("TextButton", frame)
-randomSheck.Position = UDim2.new(0, 190, 0, y)
-randomSheck.Size = UDim2.new(0, 45, 0, 25)
-randomSheck.Text = "🎲"
-randomSheck.Font = Enum.Font.Gotham
-randomSheck.TextSize = 14
-randomSheck.BackgroundColor3 = Color3.fromRGB(80, 0, 120)
-randomSheck.TextColor3 = Color3.new(1,1,1)
-
-local stats = plr:WaitForChild("leaderstats")
-local sheckles = stats:WaitForChild("Sheckles")
-
-applySheck.MouseButton1Click:Connect(function()
-	local value = tonumber(sheckInput.Text)
-	if value then
-		sheckles.Value = value
-	end
-end)
-
-randomSheck.MouseButton1Click:Connect(function()
-	local rand = math.random(10000,99999999)
-	sheckles.Value = rand
-	sheckInput.Text = tostring(rand)
 end)
