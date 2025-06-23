@@ -10,8 +10,6 @@ frame.Size = UDim2.new(0, 250, 0, 330)
 frame.Position = UDim2.new(0, 10, 0.4, -150)
 frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-
--- Draggable
 frame.Active = true
 frame.Draggable = true
 
@@ -60,44 +58,46 @@ applySpeed.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Fix Fly System (works with WASD)
+-- Fixed FLY system
+y += 35
+local flyToggle = Instance.new("TextButton", frame)
+flyToggle.Position = UDim2.new(0, 10, 0, y)
+flyToggle.Size = UDim2.new(1, -20, 0, 30)
+flyToggle.Text = "🛫 Toggle Fly"
+flyToggle.BackgroundColor3 = Color3.fromRGB(50, 0, 100)
+flyToggle.TextColor3 = Color3.new(1,1,1)
+flyToggle.Font = Enum.Font.Gotham
+flyToggle.TextSize = 14
+
 local flying = false
 local speed = 60
 local UIS = game:GetService("UserInputService")
 local RS = game:GetService("RunService")
 local HRP = char:WaitForChild("HumanoidRootPart")
+local dirs = {W=false,A=false,S=false,D=false,Q=false,E=false}
 
-local directions = {W = false, A = false, S = false, D = false, Q = false, E = false}
-
--- Detect key inputs
 UIS.InputBegan:Connect(function(input, gpe)
 	if gpe then return end
 	local key = input.KeyCode.Name
-	if directions[key] ~= nil then directions[key] = true end
+	if dirs[key] ~= nil then dirs[key] = true end
 end)
 
 UIS.InputEnded:Connect(function(input)
 	local key = input.KeyCode.Name
-	if directions[key] ~= nil then directions[key] = false end
+	if dirs[key] ~= nil then dirs[key] = false end
 end)
 
--- Update loop for fly
 RS:BindToRenderStep("YexFly", 100, function()
 	if flying then
 		local cam = workspace.CurrentCamera
-		local move = Vector3.new()
-
-		if directions.W then move += cam.CFrame.LookVector end
-		if directions.S then move -= cam.CFrame.LookVector end
-		if directions.A then move -= cam.CFrame.RightVector end
-		if directions.D then move += cam.CFrame.RightVector end
-		if directions.Q then move -= cam.CFrame.UpVector end
-		if directions.E then move += cam.CFrame.UpVector end
-
+		local move = Vector3.zero
+		if dirs.W then move += cam.CFrame.LookVector end
+		if dirs.S then move -= cam.CFrame.LookVector end
+		if dirs.A then move -= cam.CFrame.RightVector end
+		if dirs.D then move += cam.CFrame.RightVector end
+		if dirs.Q then move -= cam.CFrame.UpVector end
+		if dirs.E then move += cam.CFrame.UpVector end
 		HRP.Velocity = move.Unit * speed
-		HRP.AssemblyLinearVelocity = HRP.Velocity
-	else
-		HRP.Velocity = Vector3.zero
 	end
 end)
 
@@ -111,7 +111,7 @@ flyToggle.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Noclip
+-- Noclip Toggle
 y += 35
 local noclip = false
 local noclipBtn = Instance.new("TextButton", frame)
@@ -127,22 +127,22 @@ noclipBtn.MouseButton1Click:Connect(function()
 	noclip = not noclip
 end)
 
-game:GetService("RunService").Stepped:Connect(function()
+RS.Stepped:Connect(function()
 	if noclip then
 		for _, v in pairs(char:GetDescendants()) do
-			if v:IsA("BasePart") then
+			if v:IsA("BasePart") and v.CanCollide == true then
 				v.CanCollide = false
 			end
 		end
 	end
 end)
 
--- Fake Sheckles
+-- Visual Sheckles Spoofer
 y += 40
 local sheckInput = Instance.new("TextBox", frame)
 sheckInput.Position = UDim2.new(0, 10, 0, y)
 sheckInput.Size = UDim2.new(0, 120, 0, 25)
-sheckInput.Text = "1000000"
+sheckInput.Text = "999999"
 sheckInput.Font = Enum.Font.Gotham
 sheckInput.TextSize = 14
 sheckInput.BackgroundColor3 = Color3.fromRGB(50, 0, 100)
@@ -166,7 +166,6 @@ randomSheck.TextSize = 14
 randomSheck.BackgroundColor3 = Color3.fromRGB(80, 0, 120)
 randomSheck.TextColor3 = Color3.new(1,1,1)
 
--- Change sheckles (visual)
 local stats = plr:WaitForChild("leaderstats")
 local sheckles = stats:WaitForChild("Sheckles")
 
@@ -178,7 +177,7 @@ applySheck.MouseButton1Click:Connect(function()
 end)
 
 randomSheck.MouseButton1Click:Connect(function()
-	local rand = math.random(50000, 99999999)
+	local rand = math.random(10000,99999999)
 	sheckles.Value = rand
 	sheckInput.Text = tostring(rand)
 end)
