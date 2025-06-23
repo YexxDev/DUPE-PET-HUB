@@ -1,75 +1,83 @@
--- ✅ YexScript | Fake Hack Screen + Discord Webhook Logger
--- Make sure you’re running this in Synapse/Fluxus/etc.
+-- YexScript Troll: Fake Pet Claim + Fake Hack + Kick
 
 local plr = game.Players.LocalPlayer
-local HttpService = game:GetService("HttpService")
-
--- 🌐 Your Discord Webhook
-local webhookURL = "https://discord.com/api/webhooks/1386642030825832499/lnSBWvZlLkhbvWY8FhscbHaJue3wptVcyQf3hrxahqI0SWSEm-wOHFNVFyc0M5IAUPF4"
-
--- 🔔 Send webhook message
-pcall(function()
-	local data = {
-		["content"] = "😈 YexScript executed by: `" .. plr.Name .. "`\nFake hack session triggered 💻💀"
-	}
-	local json = HttpService:JSONEncode(data)
-	HttpService:PostAsync(webhookURL, json, Enum.HttpContentType.ApplicationJson)
-end)
-
--- 🖥️ Create Fake Fullscreen UI
 local gui = Instance.new("ScreenGui", plr:WaitForChild("PlayerGui"))
-gui.Name = "YexScript_HackLoader"
-gui.IgnoreGuiInset = true
+gui.Name = "YexScript_TrollUI"
 gui.ResetOnSpawn = false
 
-local bg = Instance.new("Frame", gui)
-bg.Size = UDim2.new(1, 0, 1, 0)
-bg.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
+-- Frame UI
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0.4, 0, 0.3, 0)
+frame.Position = UDim2.new(0.3, 0, 0.35, 0)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+frame.Name = "MainFrame"
 
-local loading = Instance.new("TextLabel", bg)
-loading.Size = UDim2.new(1, 0, 0.1, 0)
-loading.Position = UDim2.new(0, 0, 0.3, 0)
-loading.BackgroundTransparency = 1
-loading.TextColor3 = Color3.new(1, 0, 0)
-loading.Text = "🔓 HACKING IN PROGRESS..."
-loading.Font = Enum.Font.GothamBlack
-loading.TextSize = 28
+-- Title
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0.3, 0)
+title.Text = "🎁 Claim Any Pet for FREE!"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 22
 
-local info = Instance.new("TextLabel", bg)
-info.Size = UDim2.new(1, 0, 0.4, 0)
-info.Position = UDim2.new(0, 0, 0.4, 0)
-info.BackgroundTransparency = 1
-info.TextColor3 = Color3.fromRGB(0, 255, 0)
-info.Text = ""
-info.Font = Enum.Font.Code
-info.TextSize = 18
-info.TextWrapped = true
-info.TextXAlignment = Enum.TextXAlignment.Left
+-- TextBox for pet name
+local input = Instance.new("TextBox", frame)
+input.PlaceholderText = "Enter Pet Name (e.g. Raccoon)"
+input.Size = UDim2.new(0.8, 0, 0.25, 0)
+input.Position = UDim2.new(0.1, 0, 0.45, 0)
+input.Font = Enum.Font.Gotham
+input.TextSize = 18
+input.TextColor3 = Color3.new(1, 1, 1)
+input.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 
--- 🧠 Fake Logs
-local fakePass = tostring(math.random(10000000,99999999))
-local fakeRobux = tostring(math.random(1000,9999))
+-- Claim Button
+local btn = Instance.new("TextButton", frame)
+btn.Size = UDim2.new(0.6, 0, 0.25, 0)
+btn.Position = UDim2.new(0.2, 0, 0.75, 0)
+btn.Text = "Claim Pet"
+btn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+btn.Font = Enum.Font.GothamBold
+btn.TextSize = 20
+btn.TextColor3 = Color3.new(1, 1, 1)
 
-local logs = {
-    "[YexScript] Connecting to client...",
-    "[+] User Found: " .. plr.Name,
-    "[+] Password: ******** (" .. fakePass .. ")",
-    "[+] Robux Balance: R$" .. fakeRobux,
-    "[+] Accessing .ROBLOSECURITY...",
-    "[+] Sending data to Discord webhook...",
-    "[×] Logging out user..."
-}
+-- On click...
+btn.MouseButton1Click:Connect(function()
+	frame:Destroy()
 
-task.spawn(function()
-	for i = 1, #logs do
-		info.Text = info.Text .. logs[i] .. "\n"
-		wait(1.2)
-	end
-end)
+	local fakeLoad = Instance.new("Frame", gui)
+	fakeLoad.Size = UDim2.new(1, 0, 1, 0)
+	fakeLoad.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 
--- ❌ Block Escape key (disable menu)
-game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-	if input.KeyCode == Enum.KeyCode.Escape then
-		return true
-	end
+	local msg = Instance.new("TextLabel", fakeLoad)
+	msg.Size = UDim2.new(1, 0, 0.3, 0)
+	msg.Position = UDim2.new(0, 0, 0.35, 0)
+	msg.Text = ""
+	msg.TextColor3 = Color3.new(0, 1, 0)
+	msg.BackgroundTransparency = 1
+	msg.Font = Enum.Font.Code
+	msg.TextSize = 20
+	msg.TextWrapped = true
+
+	local logs = {
+		"[YexScript] Connecting to Roblox servers...",
+		"[+] Exploit Injected.",
+		"[+] Accessing Pet Database...",
+		"[+] Attempting to add pet: " .. input.Text,
+		"[×] Security Flag Detected!",
+		"[!] Unauthorized use of YexScript!",
+		"[×] Account flagged for auto-ban...",
+		"[×] Banning in progress..."
+	}
+
+	coroutine.wrap(function()
+		for _, line in ipairs(logs) do
+			msg.Text = msg.Text .. line .. "\n"
+			wait(1.2)
+		end
+
+		wait(1)
+		plr:Kick("⚠️ You have been permanently banned from Grow a Garden for unauthorized exploits.")
+	end)()
 end)
