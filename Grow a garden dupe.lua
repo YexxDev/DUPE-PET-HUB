@@ -1,4 +1,4 @@
--- ✅ YEXSCRIPT HUB - Delta-Compatible Clean GUI (Modern Style)
+-- ✅ YEXSCRIPT HUB - Fixed Auto Plant + Teleport Bypass (Delta-Ready)
 local plr = game.Players.LocalPlayer
 local char = plr.Character or plr.CharacterAdded:Wait()
 local gui = Instance.new("ScreenGui", plr:WaitForChild("PlayerGui"))
@@ -118,14 +118,12 @@ spamBtn.MouseButton1Click:Connect(function()
 	if getgenv().YexSpamPlant then
 		spawn(function()
 			while getgenv().YexSpamPlant do
-				local seed = nil
-				for _, tool in pairs(plr.Backpack:GetChildren()) do
-					if tool:IsA("Tool") and tool.Name:lower():find("seed") then
-						plr.Character.Humanoid:EquipTool(tool)
-						wait(0.3)
-						mouse1click()
-						break
-					end
+				local tool = plr.Character:FindFirstChildOfClass("Tool") or plr.Backpack:FindFirstChildOfClass("Tool")
+				if tool then
+					plr.Character.Humanoid:EquipTool(tool)
+					wait(0.3)
+					firetouchinterest(tool.Handle, char.HumanoidRootPart, 0)
+					firetouchinterest(tool.Handle, char.HumanoidRootPart, 1)
 				end
 				wait(1)
 			end
@@ -139,7 +137,8 @@ fullBtn.MouseButton1Click:Connect(function()
 			if tool:IsA("Tool") and tool.Name:lower():find("seed") then
 				plr.Character.Humanoid:EquipTool(tool)
 				wait(0.3)
-				mouse1click()
+				firetouchinterest(tool.Handle, char.HumanoidRootPart, 0)
+				firetouchinterest(tool.Handle, char.HumanoidRootPart, 1)
 				wait(0.5)
 			end
 		end
@@ -167,9 +166,9 @@ for i, pair in ipairs(teleportList) do
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
 
 	btn.MouseButton1Click:Connect(function()
-		local target = workspace:FindFirstChild(pair[2])
+		local target = workspace:FindFirstChild(pair[2]) or workspace:FindFirstChildWhichIsA("Part")
 		if target then
-			char:PivotTo(CFrame.new(target.Position + Vector3.new(0, 3, 0)))
+			char.HumanoidRootPart.CFrame = target.CFrame + Vector3.new(0, 3, 0)
 		end
 	end)
 end
