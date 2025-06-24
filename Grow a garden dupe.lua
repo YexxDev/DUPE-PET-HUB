@@ -1,3 +1,94 @@
+-- ✅ YEXSCRIPT HUB - LATEST VERSION
+local plr = game.Players.LocalPlayer
+local char = plr.Character or plr.CharacterAdded:Wait()
+
+-- 🔄 Loading Screen
+local loadingGui = Instance.new("ScreenGui", plr:WaitForChild("PlayerGui"))
+loadingGui.Name = "Yex_Loading"
+loadingGui.ResetOnSpawn = false
+loadingGui.IgnoreGuiInset = true
+
+local bg = Instance.new("Frame", loadingGui)
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+
+local loadingText = Instance.new("TextLabel", bg)
+loadingText.AnchorPoint = Vector2.new(0.5, 0.5)
+loadingText.Position = UDim2.new(0.5, 0, 0.5, 0)
+loadingText.Size = UDim2.new(0, 300, 0, 40)
+loadingText.BackgroundTransparency = 1
+loadingText.Text = "🔧 Loading YEXSCRIPT..."
+loadingText.Font = Enum.Font.GothamBold
+loadingText.TextSize = 24
+loadingText.TextColor3 = Color3.new(1, 1, 1)
+
+wait(3)
+loadingGui:Destroy()
+
+-- 🔳 Main GUI
+local gui = Instance.new("ScreenGui", plr:WaitForChild("PlayerGui"))
+gui.Name = "YexScript_Hub"
+gui.ResetOnSpawn = false
+
+-- Toggle Button
+local toggleBtn = Instance.new("TextButton", gui)
+toggleBtn.Text = "YEXSCRIPT"
+toggleBtn.Size = UDim2.new(0, 100, 0, 30)
+toggleBtn.Position = UDim2.new(0, 20, 0, 20)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(60, 0, 120)
+toggleBtn.TextColor3 = Color3.new(1,1,1)
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 14
+Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 8)
+
+-- Main Frame
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 260, 0, 500)
+frame.Position = UDim2.new(0, 20, 0.4, -160)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+frame.Visible = false -- start hidden
+
+-- Toggle Function
+toggleBtn.MouseButton1Click:Connect(function()
+	frame.Visible = not frame.Visible
+end)
+
+-- Hotkey 'Y' to toggle GUI
+local UIS = game:GetService("UserInputService")
+UIS.InputBegan:Connect(function(input, gpe)
+	if not gpe and input.KeyCode == Enum.KeyCode.Y then
+		frame.Visible = not frame.Visible
+	end
+end)
+
+-- Mini Toggle Icon
+local miniBtn = Instance.new("TextButton", gui)
+miniBtn.Size = UDim2.new(0, 30, 0, 30)
+miniBtn.Position = UDim2.new(1, -40, 1, -40)
+miniBtn.AnchorPoint = Vector2.new(0.5, 0.5)
+miniBtn.Text = "☰"
+miniBtn.TextColor3 = Color3.new(1,1,1)
+miniBtn.BackgroundColor3 = Color3.fromRGB(50, 0, 120)
+miniBtn.Font = Enum.Font.GothamBold
+miniBtn.TextSize = 20
+Instance.new("UICorner", miniBtn).CornerRadius = UDim.new(0, 6)
+
+miniBtn.MouseButton1Click:Connect(function()
+	frame.Visible = not frame.Visible
+end)
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Text = "⚙️ YEXSCRIPT HUB"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextColor3 = Color3.new(1, 1, 1)
+title.BackgroundTransparency = 1
+
 -- 📲 YEXSCRIPT HUB LOADING + GUI + FLY SYSTEM
 local plr = game.Players.LocalPlayer
 local char = plr.Character or plr.CharacterAdded:Wait()
