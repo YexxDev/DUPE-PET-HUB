@@ -1,126 +1,137 @@
--- ✅ YEXSCRIPT HUB - ADVANCED EDITION
+-- ✅ YEXSCRIPT HUB - Auto Plant (Beta) + Teleport Tab GUI
 local plr = game.Players.LocalPlayer
 local char = plr.Character or plr.CharacterAdded:Wait()
-local UIS = game:GetService("UserInputService")
-local RS = game:GetService("RunService")
-local TS = game:GetService("TeleportService")
+local gui = Instance.new("ScreenGui", plr:WaitForChild("PlayerGui"))
+gui.Name = "YexScript_Hub"
 
--- GUI Setup (Loading, Toggle, Mini Button already added previously)
--- Existing code retained for GUI, toggle, loading screen
+-- UI LIB SETUP (basic tab system)
+local tabs = {}
+local currentTab
 
--- 🌱 Auto Farm System
-local function autoFarm()
-	while getgenv().YexAutoFarm do
-		for _, seed in pairs(plr.Backpack:GetChildren()) do
-			if seed:IsA("Tool") and seed.Name:lower():find("seed") then
-				plr.Character.Humanoid:EquipTool(seed)
-				local plot = workspace:FindFirstChild("Plot") or workspace:FindFirstChildWhichIsA("Part")
-				if plot then
-					char:MoveTo(plot.Position)
-					wait(1)
-					mouse1click()
+-- Create main frame
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0, 350, 0, 300)
+main.Position = UDim2.new(0.5, -175, 0.5, -150)
+main.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+main.BorderSizePixel = 0
+main.Active = true
+main.Draggable = true
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 10)
+
+-- Tab buttons container
+local tabBtnFrame = Instance.new("Frame", main)
+tabBtnFrame.Size = UDim2.new(1, 0, 0, 30)
+tabBtnFrame.Position = UDim2.new(0, 0, 0, 0)
+tabBtnFrame.BackgroundTransparency = 1
+
+-- Content container
+local contentFrame = Instance.new("Frame", main)
+contentFrame.Size = UDim2.new(1, 0, 1, -30)
+contentFrame.Position = UDim2.new(0, 0, 0, 30)
+contentFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Instance.new("UICorner", contentFrame).CornerRadius = UDim.new(0, 8)
+
+-- Function to add new tab
+local function createTab(name)
+	local tab = Instance.new("Frame", contentFrame)
+	tab.Name = name
+	tab.Size = UDim2.new(1, 0, 1, 0)
+	tab.Visible = false
+	tab.BackgroundTransparency = 1
+	tabs[name] = tab
+
+	local btn = Instance.new("TextButton", tabBtnFrame)
+	btn.Size = UDim2.new(0, 100, 1, 0)
+	btn.Position = UDim2.new(#tabBtnFrame:GetChildren() * 0.25, 0, 0, 0)
+	btn.Text = name
+	btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	btn.TextColor3 = Color3.new(1,1,1)
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 14
+
+	btn.MouseButton1Click:Connect(function()
+		if currentTab then tabs[currentTab].Visible = false end
+		tab.Visible = true
+		currentTab = name
+	end)
+
+	if not currentTab then
+		tab.Visible = true
+		currentTab = name
+	end
+
+	return tab
+end
+
+-- 🏠 Main Tab
+local mainTab = createTab("Main")
+
+-- ✅ Auto Plant (Beta)
+local toggleBtn = Instance.new("TextButton", mainTab)
+toggleBtn.Size = UDim2.new(0, 300, 0, 40)
+toggleBtn.Position = UDim2.new(0.5, -150, 0, 20)
+toggleBtn.Text = "🔁 Auto Plant (Beta)"
+toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 60)
+toggleBtn.TextColor3 = Color3.new(1, 1, 1)
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 14
+
+getgenv().YexAutoPlant = false
+
+toggleBtn.MouseButton1Click:Connect(function()
+	getgenv().YexAutoPlant = not getgenv().YexAutoPlant
+	toggleBtn.Text = getgenv().YexAutoPlant and "✅ Auto Plant: ON" or "🔁 Auto Plant (Beta)"
+
+	if getgenv().YexAutoPlant then
+		spawn(function()
+			while getgenv().YexAutoPlant do
+				local seed = nil
+				for _, item in pairs(plr.Backpack:GetChildren()) do
+					if item:IsA("Tool") and item.Name:lower():find("seed") then
+						seed = item
+						break
+					end
 				end
+
+				if seed then
+					plr.Character.Humanoid:EquipTool(seed)
+					wait(0.5)
+					-- Move to plot or plantable spot
+					local plot = workspace:FindFirstChild("Plot") or workspace:FindFirstChildWhichIsA("Part")
+					if plot then
+						char:MoveTo(plot.Position + Vector3.new(0, 2, 0))
+						wait(0.5)
+						mouse1click()
+					end
+				end
+				wait(3)
 			end
-		end
-		wait(3)
+		end)
 	end
+end)
+
+-- 🌍 Teleport Tab
+local teleportTab = createTab("Teleport")
+
+local function makeTPBtn(name, targetName, posY)
+	local btn = Instance.new("TextButton", teleportTab)
+	btn.Size = UDim2.new(0, 300, 0, 30)
+	btn.Position = UDim2.new(0.5, -150, 0, posY)
+	btn.Text = "Teleport to " .. name
+	btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	btn.TextColor3 = Color3.new(1,1,1)
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 14
+
+	btn.MouseButton1Click:Connect(function()
+		local dest = workspace:FindFirstChild(targetName)
+		if dest then
+			char:MoveTo(dest.Position + Vector3.new(0, 2, 0))
+		end
+	end)
 end
 
-getgenv().YexAutoFarm = false
-local autoFarmBtn = Instance.new("TextButton", frame)
-autoFarmBtn.Size = UDim2.new(0, 240, 0, 30)
-autoFarmBtn.Position = UDim2.new(0, 10, 0, 40)
-autoFarmBtn.Text = "Toggle Auto Farm"
-autoFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 60)
-autoFarmBtn.TextColor3 = Color3.new(1,1,1)
-autoFarmBtn.Font = Enum.Font.GothamBold
-autoFarmBtn.TextSize = 14
-
-autoFarmBtn.MouseButton1Click:Connect(function()
-	getgenv().YexAutoFarm = not getgenv().YexAutoFarm
-	if getgenv().YexAutoFarm then
-		spawn(autoFarm)
-	end
-end)
-
--- 🌀 Infinite Seed (Visual)
-local fakeSeedBtn = Instance.new("TextButton", frame)
-fakeSeedBtn.Size = UDim2.new(0, 240, 0, 30)
-fakeSeedBtn.Position = UDim2.new(0, 10, 0, 80)
-fakeSeedBtn.Text = "Fake Infinite Seed"
-fakeSeedBtn.BackgroundColor3 = Color3.fromRGB(90, 30, 150)
-fakeSeedBtn.TextColor3 = Color3.new(1,1,1)
-fakeSeedBtn.Font = Enum.Font.GothamBold
-fakeSeedBtn.TextSize = 14
-
-fakeSeedBtn.MouseButton1Click:Connect(function()
-	local tool = Instance.new("Tool")
-	tool.Name = "🌱 Candy Blossom Seed (Visual)"
-	tool.RequiresHandle = false
-	tool.Parent = plr.Backpack
-end)
-
--- 🔍 ESP (Tools, Fruits)
-getgenv().ESP_Enabled = true
-spawn(function()
-	while getgenv().ESP_Enabled do
-		for _, obj in pairs(workspace:GetDescendants()) do
-			if obj:IsA("Tool") and not obj:FindFirstChild("YexESP") then
-				local label = Instance.new("BillboardGui", obj)
-				label.Name = "YexESP"
-				label.Size = UDim2.new(0, 100, 0, 40)
-				label.AlwaysOnTop = true
-				label.StudsOffset = Vector3.new(0, 3, 0)
-				local text = Instance.new("TextLabel", label)
-				text.Size = UDim2.new(1, 0, 1, 0)
-				text.Text = obj.Name
-				text.TextColor3 = Color3.new(1, 1, 0)
-				text.BackgroundTransparency = 1
-				text.Font = Enum.Font.SourceSansBold
-				text.TextSize = 14
-			end
-		end
-		wait(2)
-	end
-end)
-
--- 📦 Teleport Tab (basic)
-local tpBtn = Instance.new("TextButton", frame)
-tpBtn.Size = UDim2.new(0, 240, 0, 30)
-tpBtn.Position = UDim2.new(0, 10, 0, 120)
-tpBtn.Text = "Teleport to Garden"
-tpBtn.BackgroundColor3 = Color3.fromRGB(30, 120, 120)
-tpBtn.TextColor3 = Color3.new(1,1,1)
-tpBtn.Font = Enum.Font.GothamBold
-tpBtn.TextSize = 14
-
-tpBtn.MouseButton1Click:Connect(function()
-	local target = workspace:FindFirstChild("Garden") or workspace:FindFirstChildWhichIsA("Part")
-	if target then
-		char:MoveTo(target.Position)
-	end
-end)
-
--- 🔄 Server Hop (basic)
-local function serverHop()
-	local servers = game.HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
-	for _, s in pairs(servers.data) do
-		if s.playing < s.maxPlayers then
-			TS:TeleportToPlaceInstance(game.PlaceId, s.id)
-			break
-		end
-	end
-end
-
-local hopBtn = Instance.new("TextButton", frame)
-hopBtn.Size = UDim2.new(0, 240, 0, 30)
-hopBtn.Position = UDim2.new(0, 10, 0, 160)
-hopBtn.Text = "Server Hop"
-hopBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 100)
-hopBtn.TextColor3 = Color3.new(1,1,1)
-hopBtn.Font = Enum.Font.GothamBold
-hopBtn.TextSize = 14
-
-hopBtn.MouseButton1Click:Connect(serverHop)
-
--- ✅ Finished loading all advanced features
+makeTPBtn("Gear", "Gear", 20)
+makeTPBtn("Summer Event NPC", "SummerEvent", 60)
+makeTPBtn("Egg Shop", "EggShop", 100)
+makeTPBtn("Honey Creator", "HoneyMachine", 140) -- fixed name
